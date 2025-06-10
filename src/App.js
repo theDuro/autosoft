@@ -1,12 +1,27 @@
-import logo from './logo.svg';
+import React, { useState } from "react";
 import './App.css';
-import MachinesList from "./MachinesList"; 
+import MachinesList from "./MachinesList";
+import Login from "./Login";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
   return (
     <div>
-      <h1>Lista maszyn</h1>
-      <MachinesList /> {/* 👈 tutaj komponent jest użyty */}
+      {isLoggedIn ? (
+        <>
+          <h1>Lista maszyn</h1>
+          <MachinesList />
+        </>
+      ) : (
+        <Login onLogin={handleLogin} />
+      )}
     </div>
   );
 }

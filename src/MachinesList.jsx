@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+
 const MachinesList = () => {
   const [machines, setMachines] = useState([]);
   const [loading, setLoading] = useState(true);
