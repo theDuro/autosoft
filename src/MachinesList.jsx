@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./MachinesList.css";
-
+const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
 // Funkcja dekodująca JWT
 function parseJwt(token) {
   try {
@@ -33,7 +33,7 @@ const MachinesList = ({ onLogout }) => {
       return;
     }
 
-    fetch(`http://127.0.0.1:5000/api/get_machines_by_company_id/${companyId}`)
+    fetch(`${API_BASE}/api/get_machines_by_company_id/${companyId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Błąd podczas pobierania danych maszyn");
         return res.json();
@@ -56,7 +56,7 @@ const MachinesList = ({ onLogout }) => {
     setLoadingMachineData(true);
     setMachineDataError(null);
 
-    fetch(`http://127.0.0.1:5000/api/get_machine_data_by_id/${id}`)
+    fetch(`${API_BASE}/api/get_machine_data_by_id/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Błąd podczas pobierania szczegółów maszyny");
         return res.json();
@@ -79,7 +79,7 @@ const MachinesList = ({ onLogout }) => {
     setLoadingMachineData(true);
     setMachineDataError(null);
 
-    fetch(`http://127.0.0.1:5000/api/get_machine_data_by_company_id/${companyId}`)
+    fetch(`${API_BASE}/api/get_machine_data_by_company_id/${companyId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Błąd podczas pobierania wszystkich danych maszyn");
         return res.json();
