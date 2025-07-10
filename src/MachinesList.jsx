@@ -124,6 +124,7 @@ const MachinesList = ({ onLogout }) => {
             {showAllData
               ? "Wszystkie dane maszyn"
               : `Dane maszyny: ${selectedMachineName}`}
+              <p>Łączna liczba rekordów: {machineData.length}</p>
           </h2>
 
           {loadingMachineData ? (
@@ -149,7 +150,6 @@ const MachinesList = ({ onLogout }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <p>Łączna liczba rekordów: {machineData.length}</p>
                   {machineData.map((item, idx) => (
                     <tr key={idx}>
                       <td>{item.timestamp}</td>
