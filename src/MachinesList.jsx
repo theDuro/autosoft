@@ -149,6 +149,7 @@ const MachinesList = ({ onLogout }) => {
                   </tr>
                 </thead>
                 <tbody>
+                  <p>Łączna liczba rekordów: {machineData.length}</p>
                   {machineData.map((item, idx) => (
                     <tr key={idx}>
                       <td>{item.timestamp}</td>
