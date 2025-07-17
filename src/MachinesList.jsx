@@ -147,23 +147,25 @@ const MachinesList = ({ onLogout }) => {
 
   return (
     <div className="container">
-      <button onClick={handleLogoutClick} className="logout-btn">Wyloguj</button>
+      <button onClick={handleLogoutClick} className="logout-btn">
+        Wyloguj
+      </button>
 
       {loading && <p>Ładowanie danych...</p>}
       {error && <p style={{ color: "red" }}>Błąd: {error}</p>}
 
       {!loading && !error && (selectedMachineId || showAllData) && (
         <div>
-          <button onClick={handleBackClick} className="back-btn">← Wstecz</button>
-          <h2>
-            {showAllData
-              ? "Wszystkie dane maszyn"
-              : `Dane maszyny: ${selectedMachineName}`}
-          </h2>
+          <button onClick={handleBackClick} className="back-btn">
+            ← Wstecz
+          </button>
+          <h2>{showAllData ? "Wszystkie dane maszyn" : `Dane maszyny: ${selectedMachineName}`}</h2>
           <p>Łączna liczba rekordów: {filteredData.length}</p>
 
           {/* Kalendarzyki do wyboru dat */}
-          <div style={{ marginBottom: "10px", display: "flex", gap: "15px", alignItems: "center" }}>
+          <div
+            style={{ marginBottom: "10px", display: "flex", gap: "15px", alignItems: "center" }}
+          >
             <label>
               Od:{" "}
               <input
@@ -204,10 +206,40 @@ const MachinesList = ({ onLogout }) => {
             <>
               {!showChart ? (
                 <>
-                <button onClick={handleShowChartClick} className="chart-btn">
+                  {/* Dwa nowe przyciski nad tabelą */}
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      display: "flex",
+                      gap: "15px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        alert(`Zatrzymaj maszynę: ${selectedMachineName || "Wszystkie"}`)
+                      }
+                      className="action-btn"
+                    >
+                      Zatrzymaj maszynę
+                    </button>
+                    <button
+                      onClick={() =>
+                        alert(`Bezpieczeństwo: ${selectedMachineName || "Wszystkie"}`)
+                      }
+                      className="action-btn"
+                    >
+                      Bezpieczeństwo
+                    </button>
+                  </div>
+
+                  <button onClick={handleShowChartClick} className="chart-btn">
                     📊 Pokaż jako wykres
                   </button>
-                  <div className="table-wrapper" style={{ maxHeight: "400px", overflowY: "auto" }}>
+                  <div
+                    className="table-wrapper"
+                    style={{ maxHeight: "400px", overflowY: "auto" }}
+                  >
                     <table className="data-table">
                       <thead>
                         <tr>
@@ -239,7 +271,6 @@ const MachinesList = ({ onLogout }) => {
                       </tbody>
                     </table>
                   </div>
-                
                 </>
               ) : (
                 <>
@@ -247,7 +278,10 @@ const MachinesList = ({ onLogout }) => {
                     <ResponsiveContainer>
                       <BarChart data={filteredData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="timestamp" tickFormatter={(tick) => tick.slice(11, 19)} />
+                        <XAxis
+                          dataKey="timestamp"
+                          tickFormatter={(tick) => tick.slice(11, 19)}
+                        />
                         <YAxis />
                         <Tooltip />
                         <Legend />
@@ -289,3 +323,4 @@ const MachinesList = ({ onLogout }) => {
 };
 
 export default MachinesList;
+
