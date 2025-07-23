@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import "./MachinesList.css";
 
-const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
+const API_BASE = "http://20.215.134.159:5000";
 
 function parseJwt(token) {
   try {
