@@ -4,6 +4,7 @@ import MachineTable from "./MachineTable";
 import MachineChart from "./MachineChart";
 import DateFilter from "./DateFilter";
 import TopActions from "./TopActions";
+import Configuration from "./Configuration"; // ✅ zakładamy że taki komponent istnieje
 import "./MachinesList.css";
 
 const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
@@ -27,6 +28,7 @@ const MachinesList = ({ onLogout }) => {
   const [machineDataError, setMachineDataError] = useState(null);
   const [showAllData, setShowAllData] = useState(false);
   const [showChart, setShowChart] = useState(false);
+  const [showConfiguration, setShowConfiguration] = useState(false); // ✅ NOWY STAN
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
@@ -66,6 +68,7 @@ const MachinesList = ({ onLogout }) => {
     setLoadingMachineData(true);
     setMachineDataError(null);
     setShowChart(false);
+    setShowConfiguration(false);
     setDateFrom("");
     setDateTo("");
 
@@ -83,6 +86,7 @@ const MachinesList = ({ onLogout }) => {
     setMachineData([]);
     setMachineDataError(null);
     setShowChart(false);
+    setShowConfiguration(false);
     setDateFrom("");
     setDateTo("");
   };
@@ -107,7 +111,14 @@ const MachinesList = ({ onLogout }) => {
       {loading && <p>Ładowanie danych...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!loading && !error && (selectedMachineId || showAllData) && (
+      {!loading && !error && showConfiguration && (
+        <>
+          <button onClick={() => setShowConfiguration(false)} className="back-btn">← Wróć do danych</button>
+          <Configuration machineName={selectedMachineName || "Wszystkie"} />
+        </>
+      )}
+
+      {!loading && !error && !showConfiguration && (selectedMachineId || showAllData) && (
         <>
           <button onClick={handleBackClick} className="back-btn">← Wstecz</button>
           <h2>{showAllData ? "Wszystkie dane maszyn" : `Dane maszyny: ${selectedMachineName}`}</h2>
@@ -128,6 +139,7 @@ const MachinesList = ({ onLogout }) => {
                 onStop={() => alert(`Zatrzymaj maszynę: ${selectedMachineName || "Wszystkie"}`)}
                 onSecure={() => alert(`Bezpieczeństwo: ${selectedMachineName || "Wszystkie"}`)}
                 onShowChart={() => setShowChart(true)}
+                onGoToConfig={() => setShowConfiguration(true)} // ✅ NOWE ZACHOWANIE
               />
               <MachineTable data={filteredData} />
             </>
@@ -140,7 +152,7 @@ const MachinesList = ({ onLogout }) => {
         </>
       )}
 
-      {!loading && !error && !selectedMachineId && !showAllData && (
+      {!loading && !error && !selectedMachineId && !showAllData && !showConfiguration && (
         <div className="card-grid">
           {machines.map((machine) => (
             <MachineCard key={machine.id} machine={machine} onClick={handleCardClick} />
