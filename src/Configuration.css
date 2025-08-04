@@ -1,5 +1,5 @@
 .config-wrapper {
-  background-color: #1a1a1a; /* ciemne tło */
+  background-color: #1a1a1a;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -10,7 +10,7 @@
 }
 
 h2, h3 {
-  color: #ffba08; /* żółty nagłówek */
+  color: #ffba08;
   margin-bottom: 1rem;
 }
 
@@ -84,7 +84,7 @@ h2, h3 {
 
 .remove-agg {
   margin-top: 0.7rem;
-  background-color: #d00000;
+  background-color: #e85d04; /* pomarańczowy */
   color: white;
   padding: 0.4rem 0.8rem;
   border: none;
@@ -95,7 +95,7 @@ h2, h3 {
 }
 
 .remove-agg:hover {
-  background-color: #9a0000;
+  background-color: #a97505;
 }
 
 .add-btn {
@@ -110,4 +110,42 @@ h2, h3 {
   transition: background-color 0.3s ease;
 }
 
-.add-btn:hover
+.add-btn:hover {
+  background-color: #faa307;
+}
+
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tile {
+  background: linear-gradient(145deg, #222, #1a1a1a);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  flex: 1 1 250px;
+  text-align: left;
+  color: #f8f8f8;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  border: 1px solid #2e2e2e;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(255, 186, 8, 0.2);
+}
+
+.tile-title {
+  font-weight: bold;
+  color: #ffba08;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.tile-content {
+  font-size: 0.95rem;
+  color: #cccccc;
+  line-height: 1.4;
+}
