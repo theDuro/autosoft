@@ -6,10 +6,10 @@ const aggregationTypes = ["sum", "avg", "min", "max"];
 
 const Configuration = ({ onBack }) => {
   const [tagValues, setTagValues] = useState({
-    tag1: "0",
-    tag2: "0",
-    tag3: "0",
-    tag4: "0",
+    tag1: "tag1",
+    tag2: "tag2",
+    tag3: "tag3",
+    tag4: "tag4",
   });
 
   const [aggregations, setAggregations] = useState([]);
@@ -33,6 +33,37 @@ const Configuration = ({ onBack }) => {
 
   const handleRemoveAggregation = (index) => {
     setAggregations(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const sendConfiguration = async () => {
+    const new_config = {
+      tags: tagValues,
+      aggregations,
+    };
+
+    const machineId = "1"; // 👈 Na sztywno ustawione ID
+
+    try {
+      const res = await fetch(`/api/update_conf_by_machine_id/${machineId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ new_config }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert("✅ Konfiguracja została zaktualizowana!");
+      } else {
+        alert(`❌ Błąd: ${result.error || "Nieznany problem"}`);
+        console.error(result);
+      }
+    } catch (err) {
+      alert("❌ Wystąpił błąd połączenia");
+      console.error(err);
+    }
   };
 
   return (
@@ -110,6 +141,11 @@ const Configuration = ({ onBack }) => {
           </div>
         ))}
       </div>
+
+      {/* 🚀 Zapisz konfigurację */}
+      <button className="send-btn" onClick={sendConfiguration}>
+        💾 Zapisz konfigurację
+      </button>
     </div>
   );
 };
