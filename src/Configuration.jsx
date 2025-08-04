@@ -87,7 +87,6 @@ const Configuration = ({ onBack }) => {
 
   return (
     <div className="config-wrapper">
-      <button onClick={onBack} className="back-btn">← Wróć</button>
       <h2>Konfiguracja Tagi i Agregacje</h2>
 
       <div className="tags-form">
