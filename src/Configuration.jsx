@@ -44,7 +44,7 @@ const Configuration = ({ onBack }) => {
     const machineId = "1"; // 👈 Na sztywno ustawione ID
 
     try {
-      const res = await fetch(`/api/update_conf_by_machine_id/${machineId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/update_conf_by_machine_id/${machineId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
