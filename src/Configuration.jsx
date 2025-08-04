@@ -1,18 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Configuration.css";
 
 const tags = ["tag1", "tag2", "tag3", "tag4"];
 const aggregationTypes = ["sum", "avg", "min", "max"];
 
 const Configuration = ({ onBack }) => {
-  const [tagValues, setTagValues] = useState({
-    tag1: "tag1",
-    tag2: "tag2",
-    tag3: "tag3",
-    tag4: "tag4",
-  });
-
+  const [tagValues, setTagValues] = useState({});
   const [aggregations, setAggregations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const machineId = "1"; // 👈 na sztywno
+
+  // 🔄 Pobierz dane z backendu przy załadowaniu komponentu
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/get_conf_by_machine_id/${machineId}`);
+        if (!res.ok) throw new Error("Błąd pobierania konfiguracji");
+        const data = await res.json();
+        setTagValues(data.tags || {});
+        setAggregations(data.aggregations || []);
+      } catch (err) {
+        setError("❌ Nie udało się pobrać konfiguracji");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   const handleTagValueChange = (tag, value) => {
     setTagValues(prev => ({
@@ -41,8 +59,6 @@ const Configuration = ({ onBack }) => {
       aggregations,
     };
 
-    const machineId = "1"; // 👈 Na sztywno ustawione ID
-
     try {
       const res = await fetch(`http://127.0.0.1:5000/api/update_conf_by_machine_id/${machineId}`, {
         method: "POST",
@@ -66,6 +82,9 @@ const Configuration = ({ onBack }) => {
     }
   };
 
+  if (loading) return <div>⏳ Ładowanie konfiguracji...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div className="config-wrapper">
       <button onClick={onBack} className="back-btn">← Wróć</button>
@@ -77,7 +96,7 @@ const Configuration = ({ onBack }) => {
             <label>{tag.toUpperCase()}</label>
             <input
               type="text"
-              value={tagValues[tag]}
+              value={tagValues[tag] || ""}
               onChange={(e) => handleTagValueChange(tag, e.target.value)}
             />
           </div>
