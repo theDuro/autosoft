@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./Configuration.css";
 
+const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
 const tags = ["tag1", "tag2", "tag3", "tag4"];
 const aggregationTypes = ["sum", "avg", "min", "max"];
 
-const Configuration = ({ onBack }) => {
+const Configuration = ({ machineId, machineName = "Maszyna" }) => {
   const [tagValues, setTagValues] = useState({});
   const [aggregations, setAggregations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const machineId = "1"; // 👈 na sztywno
-
-  // 🔄 Pobierz dane z backendu przy załadowaniu komponentu
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/get_conf_by_machine_id/${machineId}`);
+        const res = await fetch(`${API_BASE}/api/get_conf_by_machine_id/${machineId}`);
         if (!res.ok) throw new Error("Błąd pobierania konfiguracji");
         const data = await res.json();
         setTagValues(data.tags || {});
@@ -30,13 +28,10 @@ const Configuration = ({ onBack }) => {
     };
 
     fetchConfig();
-  }, []);
+  }, [machineId]);
 
   const handleTagValueChange = (tag, value) => {
-    setTagValues(prev => ({
-      ...prev,
-      [tag]: value,
-    }));
+    setTagValues(prev => ({ ...prev, [tag]: value }));
   };
 
   const handleAddAggregation = () => {
@@ -54,17 +49,12 @@ const Configuration = ({ onBack }) => {
   };
 
   const sendConfiguration = async () => {
-    const new_config = {
-      tags: tagValues,
-      aggregations,
-    };
+    const new_config = { tags: tagValues, aggregations };
 
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/update_conf_by_machine_id/${machineId}`, {
+      const res = await fetch(`${API_BASE}/api/update_conf_by_machine_id/${machineId}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ new_config }),
       });
 
@@ -87,7 +77,7 @@ const Configuration = ({ onBack }) => {
 
   return (
     <div className="config-wrapper">
-      <h2>Konfiguracja Tagi i Agregacje</h2>
+      <h2>Konfiguracja: {machineName}</h2>
 
       <div className="tags-form">
         {tags.map(tag => (
@@ -160,10 +150,7 @@ const Configuration = ({ onBack }) => {
         ))}
       </div>
 
-      {/* 🚀 Zapisz konfigurację */}
-      <button className="send-btn" onClick={sendConfiguration}>
-        💾 Zapisz konfigurację
-      </button>
+      <button className="send-btn" onClick={sendConfiguration}>💾 Zapisz konfigurację</button>
     </div>
   );
 };

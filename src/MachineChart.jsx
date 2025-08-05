@@ -2,6 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 
+const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
+
 const DEFAULT_TAG_LABELS = {
   tag1: "tag1",
   tag2: "tag2",
@@ -15,11 +17,14 @@ const downsampleData = (data, maxPoints = 200) => {
   return data.filter((_, index) => index % factor === 0);
 };
 
-const MachineChart = ({ data }) => {
+const MachineChart = ({ data, machineId }) => {
   const [tagLabels, setTagLabels] = useState(DEFAULT_TAG_LABELS);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/get_conf_by_machine_id/1")
+    if (!machineId) return;
+
+    axios
+      .get(`${API_BASE}/api/get_conf_by_machine_id/${machineId}`)
       .then((response) => {
         const tags = response.data?.tags || {};
         setTagLabels({ ...DEFAULT_TAG_LABELS, ...tags });
@@ -27,19 +32,19 @@ const MachineChart = ({ data }) => {
       .catch((err) => {
         console.error("Błąd podczas pobierania etykiet:", err);
       });
-  }, []);
+  }, [machineId]);
 
   const sampledData = useMemo(() => downsampleData(data, 200), [data]);
 
-  const timestamps = sampledData.map(d => d.timestamp.slice(11, 19));
-  const tag1 = sampledData.map(d => d.tag1);
-  const tag2 = sampledData.map(d => d.tag2);
-  const tag3 = sampledData.map(d => d.tag3);
-  const tag4 = sampledData.map(d => d.tag4);
+  const timestamps = sampledData.map((d) => d.timestamp.slice(11, 19));
+  const tag1 = sampledData.map((d) => d.tag1);
+  const tag2 = sampledData.map((d) => d.tag2);
+  const tag3 = sampledData.map((d) => d.tag3);
+  const tag4 = sampledData.map((d) => d.tag4);
 
   const options = {
     tooltip: {
-      trigger: "axis"
+      trigger: "axis",
     },
     legend: {
       data: [
@@ -47,46 +52,46 @@ const MachineChart = ({ data }) => {
         tagLabels.tag2,
         tagLabels.tag3,
         tagLabels.tag4
-      ]
+      ],
     },
     grid: {
       left: "3%",
       right: "4%",
       bottom: "3%",
-      containLabel: true
+      containLabel: true,
     },
     xAxis: {
       type: "category",
       data: timestamps,
       axisLabel: {
-        interval: Math.ceil(timestamps.length / 10)
-      }
+        interval: Math.ceil(timestamps.length / 10),
+      },
     },
     yAxis: {
-      type: "value"
+      type: "value",
     },
     series: [
       {
         name: tagLabels.tag1,
         type: "bar",
-        data: tag1
+        data: tag1,
       },
       {
         name: tagLabels.tag2,
         type: "bar",
-        data: tag2
+        data: tag2,
       },
       {
         name: tagLabels.tag3,
         type: "bar",
-        data: tag3
+        data: tag3,
       },
       {
         name: tagLabels.tag4,
         type: "bar",
-        data: tag4
-      }
-    ]
+        data: tag4,
+      },
+    ],
   };
 
   return (

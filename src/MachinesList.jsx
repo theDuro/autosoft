@@ -4,7 +4,7 @@ import MachineTable from "./MachineTable";
 import MachineChart from "./MachineChart";
 import DateFilter from "./DateFilter";
 import TopActions from "./TopActions";
-import Configuration from "./Configuration"; // ✅ zakładamy że taki komponent istnieje
+import Configuration from "./Configuration";
 import "./MachinesList.css";
 
 const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
@@ -28,7 +28,7 @@ const MachinesList = ({ onLogout }) => {
   const [machineDataError, setMachineDataError] = useState(null);
   const [showAllData, setShowAllData] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [showConfiguration, setShowConfiguration] = useState(false); // ✅ NOWY STAN
+  const [showConfiguration, setShowConfiguration] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
@@ -114,7 +114,10 @@ const MachinesList = ({ onLogout }) => {
       {!loading && !error && showConfiguration && (
         <>
           <button onClick={() => setShowConfiguration(false)} className="back-btn">← Wróć do danych</button>
-          <Configuration machineName={selectedMachineName || "Wszystkie"} />
+          <Configuration
+            machineId={selectedMachineId}
+            machineName={selectedMachineName || "Wszystkie"}
+          />
         </>
       )}
 
@@ -139,13 +142,13 @@ const MachinesList = ({ onLogout }) => {
                 onStop={() => alert(`Zatrzymaj maszynę: ${selectedMachineName || "Wszystkie"}`)}
                 onSecure={() => alert(`Bezpieczeństwo: ${selectedMachineName || "Wszystkie"}`)}
                 onShowChart={() => setShowChart(true)}
-                onGoToConfig={() => setShowConfiguration(true)} // ✅ NOWE ZACHOWANIE
+                onGoToConfig={() => setShowConfiguration(true)}
               />
               <MachineTable data={filteredData} />
             </>
           ) : (
             <>
-              <MachineChart data={filteredData} />
+              <MachineChart data={filteredData} machineId={selectedMachineId} />
               <button onClick={() => setShowChart(false)} className="chart-btn">← Powrót do tabeli</button>
             </>
           )}
@@ -167,3 +170,4 @@ const MachinesList = ({ onLogout }) => {
 };
 
 export default MachinesList;
+
