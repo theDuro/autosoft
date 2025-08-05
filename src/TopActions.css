@@ -1,0 +1,48 @@
+.top-actions {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  background-color: #3d3c3c;
+  color: #f0f0f0;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn:hover {
+  background-color: #595757;
+}
+
+.action-btn.orange {
+  background-color: #ffba08;
+  color: #494747;
+}
+
+.action-btn.orange:hover {
+  background-color: #faa307;
+}
+
+.chart-btn {
+  background-color: #ffba08;
+  color: #494747;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.chart-btn:hover {
+  background-color: #faa307;
+}

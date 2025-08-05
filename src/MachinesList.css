@@ -1,42 +1,45 @@
 :root {
-  --gray-light: #1c1c1c;
-  --gray-dark: #0e0e0e;
-  --gray-medium: #2b2b2b;
-  --gray-border: #3a3a3a;
-  --gray-text: #dddddd;
+  --gray-bg: #2a2a2a;
+  --gray-deep: #1a1a1a;
+  --gray-border: #444;
+  --gray-text: #cccccc;
+  --gray-text-light: #f0f0f0;
 
-  --orange-main: #ff7b00;
-  --orange-hover: #e36a00;
+  --yellow-main: #ffba08;
+  --yellow-hover: #faa307;
 
-  --btn-black-bg: #000000;
-  --btn-black-hover: #1a1a1a;
+  --orange-main: #e85d04;
+  --orange-hover: #a97505;
 
-  --shadow-dark: rgba(0, 0, 0, 0.5);
-  --shadow-deep: rgba(0, 0, 0, 0.8);
+  --shadow-medium: rgba(0, 0, 0, 0.3);
+  --shadow-deep: rgba(0, 0, 0, 0.5);
 }
 
 body {
   margin: 0;
-  background-color: var(--gray-light);
-  color: var(--gray-text);
+  background-color: var(--gray-bg);
+  color: var(--gray-text-light);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* === KONTENER === */
 .container {
-  padding: 40px;
-  background-color: var(--gray-light);
-  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--gray-bg);
+  max-width: 1100px;
+  margin: 2rem auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px var(--shadow-medium);
 }
 
 /* === NAGŁÓWEK === */
 .page-title {
   font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: white;
-  border-left: 6px solid var(--orange-main);
-  padding-left: 15px;
+  font-weight: bold;
+  color: var(--yellow-main);
+  margin-bottom: 2rem;
+  border-left: 6px solid var(--yellow-main);
+  padding-left: 1rem;
   text-transform: uppercase;
 }
 
@@ -44,13 +47,13 @@ body {
 .logout-btn {
   background-color: var(--orange-main);
   color: white;
-  padding: 10px 20px;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  box-shadow: 0 0 10px var(--shadow-dark);
+  box-shadow: 0 2px 10px var(--shadow-deep);
 }
 
 .logout-btn:hover {
@@ -61,127 +64,88 @@ body {
 .card-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 1rem;
 }
 
 .machine-card {
-  background-color: var(--gray-medium);
-  color: var(--gray-text);
-  padding: 20px;
-  width: 200px;
-  border-radius: 10px;
-  border: 1px solid var(--gray-border);
-  box-shadow: 0 4px 12px var(--shadow-dark);
+  background: linear-gradient(145deg, #222, #1a1a1a);
+  color: var(--gray-text-light);
+  padding: 1rem;
+  flex: 1 1 250px;
+  border-radius: 16px;
+  border: 1px solid #2e2e2e;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
-  text-align: center;
-  font-weight: 500;
+  text-align: left;
 }
 
 .machine-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 16px var(--shadow-deep);
-  background-color: #2f2f2f;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(255, 186, 8, 0.2);
+}
+
+.tile-title {
+  font-weight: bold;
+  color: var(--yellow-main);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.tile-content {
+  font-size: 0.95rem;
+  color: var(--gray-text);
+  line-height: 1.4;
 }
 
 /* === KAFEL "Wszystkie dane" === */
 .all-data-card {
+  border: 2px dashed var(--yellow-main);
   background-color: transparent;
-  border: 2px dashed var(--gray-text);
-  color: var(--gray-text);
-  font-weight: 600;
+  color: var(--yellow-main);
+  font-weight: bold;
+  text-align: center;
 }
 
 .all-data-card:hover {
-  border-color: var(--orange-main);
-  background-color: var(--gray-medium);
+  background-color: var(--gray-deep);
+  border-color: var(--yellow-hover);
 }
 
 /* === WSTECZ === */
 .back-btn {
   background: none;
   border: none;
-  color: var(--gray-text);
+  color: var(--yellow-main);
   font-size: 1rem;
   cursor: pointer;
-  text-decoration: underline;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
+  transition: color 0.2s ease;
+}
+
+.back-btn:hover {
+  color: var(--yellow-hover);
 }
 
 /* === TABELA === */
 .table-wrapper {
   overflow-x: auto;
-  margin-top: 20px;
+  margin-top: 2rem;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--gray-dark);
-  border-radius: 6px;
+  background-color: var(--gray-deep);
+  border-radius: 12px;
   border: 1px solid var(--gray-border);
-  color: var(--gray-text);
-  box-shadow: 0 2px 10px var(--shadow-dark);
+  color: var(--gray-text-light);
+  box-shadow: 0 2px 10px var(--shadow-deep);
 }
 
 .data-table th,
 .data-table td {
-  padding: 12px 16px;
+  padding: 1rem;
   text-align: left;
   border-bottom: 1px solid var(--gray-border);
-}
-
-.data-table th {
-  background-color: var(--gray-medium);
-  color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.data-table tr:hover {
-  background-color: #928e8e;
-}
-
-/* === PRZYCISKI === */
-.chart-btn {
-  background-color: var(--orange-main);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-  box-shadow: 0 0 10px var(--shadow-dark);
-  margin-top: 24px;
-}
-
-.chart-btn:hover {
-  background-color: var(--orange-hover);
-}
-
-.btn-black {
-  background-color: var(--btn-black-bg);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 0 10px var(--shadow-deep);
-}
-
-.btn-black:hover {
-  background-color: var(--btn-black-hover);
-}
-
-/* === KONTENER NA WYKRES === */
-.chart-wrapper {
-  width: 100%;
-  height: 400px;
-  margin-top: 20px;
-  background-color: var(--gray-dark);
-  border-radius: 6px;
-  box-shadow: 0 2px 10px var(--shadow-dark);
-  padding: 16px;
 }
