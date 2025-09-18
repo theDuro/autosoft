@@ -1,0 +1,22 @@
+.machine-errors {
+  margin-top: 20px;
+}
+
+.machine-errors table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #cc6600; /* ciemniejszy pomarańcz dla obwódki tabeli */
+}
+
+.machine-errors th,
+.machine-errors td {
+  border: 1px solid #cc6600; /* ciemniejszy pomarańcz między komórkami */
+  padding: 8px;
+  text-align: left;
+}
+
+.machine-errors th {
+  background-color: #cc6600; /* jaśniejszy pomarańcz dla nagłówków */
+  border-top: 3px solid #cc6600; /* górna obwódka ciemniejszym pomarańczem */
+  font-weight: bold;
+}

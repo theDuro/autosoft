@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MachineCard from "./MachineCard";
 import MachineTable from "./MachineTable";
 import MachineChart from "./MachineChart";
+import MachineErrors from "./MachineErrors";
 import DateFilter from "./DateFilter";
 import TopActions from "./TopActions";
 import Configuration from "./Configuration";
@@ -21,14 +22,18 @@ const MachinesList = ({ onLogout }) => {
   const [machines, setMachines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [selectedMachineId, setSelectedMachineId] = useState(null);
   const [selectedMachineName, setSelectedMachineName] = useState(null);
+
   const [machineData, setMachineData] = useState([]);
   const [loadingMachineData, setLoadingMachineData] = useState(false);
   const [machineDataError, setMachineDataError] = useState(null);
-  const [showAllData, setShowAllData] = useState(false);
+
   const [showChart, setShowChart] = useState(false);
   const [showConfiguration, setShowConfiguration] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
@@ -44,11 +49,27 @@ const MachinesList = ({ onLogout }) => {
     }
 
     fetch(`${API_BASE}/api/get_machines_by_company_id/${companyId}`)
-      .then((res) => res.ok ? res.json() : Promise.reject("Błąd podczas pobierania maszyn"))
+      .then((res) => (res.ok ? res.json() : Promise.reject("Błąd podczas pobierania maszyn")))
       .then(setMachines)
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
   }, [companyId]);
+
+  const fetchMachineData = (urlPath) => {
+    setLoadingMachineData(true);
+    setMachineDataError(null);
+    setShowChart(false);
+    setShowConfiguration(false);
+    setShowErrors(false);
+    setDateFrom("");
+    setDateTo("");
+
+    fetch(`${API_BASE}${urlPath}`)
+      .then((res) => (res.ok ? res.json() : Promise.reject("Błąd pobierania danych")))
+      .then(setMachineData)
+      .catch((err) => setMachineDataError(err))
+      .finally(() => setLoadingMachineData(false));
+  };
 
   const handleCardClick = (id) => {
     const machine = machines.find((m) => m.id === id);
@@ -60,33 +81,17 @@ const MachinesList = ({ onLogout }) => {
   const handleAllDataClick = () => {
     setSelectedMachineId(null);
     setSelectedMachineName(null);
-    setShowAllData(true);
     fetchMachineData(`/api/get_machine_data_by_company_id/${companyId}`);
-  };
-
-  const fetchMachineData = (urlPath) => {
-    setLoadingMachineData(true);
-    setMachineDataError(null);
-    setShowChart(false);
-    setShowConfiguration(false);
-    setDateFrom("");
-    setDateTo("");
-
-    fetch(`${API_BASE}${urlPath}`)
-      .then((res) => res.ok ? res.json() : Promise.reject("Błąd pobierania danych"))
-      .then(setMachineData)
-      .catch((err) => setMachineDataError(err))
-      .finally(() => setLoadingMachineData(false));
   };
 
   const handleBackClick = () => {
     setSelectedMachineId(null);
     setSelectedMachineName(null);
-    setShowAllData(false);
-    setMachineData([]);
-    setMachineDataError(null);
     setShowChart(false);
     setShowConfiguration(false);
+    setShowErrors(false);
+    setMachineData([]);
+    setMachineDataError(null);
     setDateFrom("");
     setDateTo("");
   };
@@ -111,20 +116,10 @@ const MachinesList = ({ onLogout }) => {
       {loading && <p>Ładowanie danych...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!loading && !error && showConfiguration && (
-        <>
-          <button onClick={() => setShowConfiguration(false)} className="back-btn">← Wróć do danych</button>
-          <Configuration
-            machineId={selectedMachineId}
-            machineName={selectedMachineName || "Wszystkie"}
-          />
-        </>
-      )}
-
-      {!loading && !error && !showConfiguration && (selectedMachineId || showAllData) && (
+      {!loading && !error && selectedMachineId && (
         <>
           <button onClick={handleBackClick} className="back-btn">← Wstecz</button>
-          <h2>{showAllData ? "Wszystkie dane maszyn" : `Dane maszyny: ${selectedMachineName}`}</h2>
+          <h2>Dane maszyny: {selectedMachineName}</h2>
           <p>Łączna liczba rekordów: {filteredData.length}</p>
 
           <DateFilter {...{ dateFrom, dateTo, setDateFrom, setDateTo }} />
@@ -135,27 +130,30 @@ const MachinesList = ({ onLogout }) => {
             <p style={{ color: "red" }}>{machineDataError}</p>
           ) : filteredData.length === 0 ? (
             <p>Brak danych w wybranym zakresie</p>
-          ) : !showChart ? (
+          ) : (
             <>
               <TopActions
                 machineName={selectedMachineName}
-                onStop={() => alert(`Zatrzymaj maszynę: ${selectedMachineName || "Wszystkie"}`)}
-                onSecure={() => alert(`Bezpieczeństwo: ${selectedMachineName || "Wszystkie"}`)}
-                onShowChart={() => setShowChart(true)}
-                onGoToConfig={() => setShowConfiguration(true)}
+                onStop={() => alert(`Zatrzymaj maszynę: ${selectedMachineName}`)}
+                onSecure={() => alert(`Bezpieczeństwo: ${selectedMachineName}`)}
+                onShowChart={() => setShowChart(!showChart)}
+                onGoToConfig={() => setShowConfiguration(!showConfiguration)}
+                onShowErrors={() => setShowErrors(!showErrors)}
               />
-              <MachineTable data={filteredData} />
-            </>
-          ) : (
-            <>
-              <MachineChart data={filteredData} machineId={selectedMachineId} />
-              <button onClick={() => setShowChart(false)} className="chart-btn">← Powrót do tabeli</button>
+
+              {!showChart && !showConfiguration && !showErrors && (
+                <MachineTable data={filteredData} />
+              )}
+
+              {showChart && <MachineChart data={filteredData} machineId={selectedMachineId} />}
+              {showConfiguration && <Configuration machineId={selectedMachineId} machineName={selectedMachineName} />}
+              {showErrors && <MachineErrors machineId={selectedMachineId} />}
             </>
           )}
         </>
       )}
 
-      {!loading && !error && !selectedMachineId && !showAllData && !showConfiguration && (
+      {!loading && !error && !selectedMachineId && (
         <div className="card-grid">
           {machines.map((machine) => (
             <MachineCard key={machine.id} machine={machine} onClick={handleCardClick} />
@@ -170,4 +168,3 @@ const MachinesList = ({ onLogout }) => {
 };
 
 export default MachinesList;
-
