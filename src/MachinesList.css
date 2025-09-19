@@ -17,7 +17,11 @@
 
 body {
   margin: 0;
-  background-color: var(--gray-bg);
+  background-color: var(--gray-bg); /* fallback jeśli obraz się nie załaduje */
+  background-image: url("WIA.00.00.00.png"); /* obraz jako tło */
+  background-repeat: no-repeat;
+  background-size: cover; /* dopasowanie do ekranu */
+  background-position: center;
   color: var(--gray-text-light);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -25,7 +29,7 @@ body {
 /* === KONTENER === */
 .container {
   padding: 2rem;
-  background-color: var(--gray-bg);
+  background-color: rgba(42, 42, 42, 0.9); /* lekko przezroczysty, żeby tło było widoczne */
   max-width: 1100px;
   margin: 2rem auto;
   border-radius: 16px;
