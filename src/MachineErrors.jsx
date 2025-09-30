@@ -69,7 +69,7 @@ const MachineConfig = ({ machineId }) => {
   useEffect(() => {
     if (!config || config.length === 0) return;
     fetchErrors();
-    const intervalId = setInterval(fetchErrors, 10000);
+    const intervalId = setInterval(fetchErrors, 3000);
     return () => clearInterval(intervalId);
   }, [config, date]);
 
