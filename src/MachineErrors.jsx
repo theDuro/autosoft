@@ -112,7 +112,7 @@ const MachineConfig = ({ machineId }) => {
           ← Powrót
         </button>
         <h2>
-          Błędy dla części {selectedPart.name} z dnia {date}
+          Błędy dla części {selectedPart.name} od dnia {date}
         </h2>
 
         {partLoading && <p>Ładowanie...</p>}
@@ -176,6 +176,7 @@ const MachineConfig = ({ machineId }) => {
             <button
               key={item.id}
               className="machine-button"
+              //test 1.10
               title={item.name}
               style={{
                 position: "absolute",
@@ -196,7 +197,7 @@ const MachineConfig = ({ machineId }) => {
               <div
                 style={{
                   color: errs.length ? "red" : "#999",
-                  fontSize: "10px",
+                  fontSize: "4px",
                   marginTop: "2px",
                 }}
               >
