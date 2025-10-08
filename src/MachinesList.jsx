@@ -8,6 +8,7 @@ import TopActions from "./TopActions";
 import Configuration from "./Configuration";
 import "./MachinesList.css";
 
+//const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
 const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
 
 function parseJwt(token) {
