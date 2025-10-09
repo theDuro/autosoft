@@ -19,7 +19,7 @@ const MachineConfig = ({ machineId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [errorsMap, setErrorsMap] = useState({});
-  const [countersMap, setCountersMap] = useState({});
+  const [counters, setCounters] = useState([]);
   const [selectedPart, setSelectedPart] = useState(null);
   const [partErrors, setPartErrors] = useState([]);
   const [partLoading, setPartLoading] = useState(false);
@@ -65,15 +65,28 @@ const MachineConfig = ({ machineId }) => {
     fetch(`${API_BASE}/api/get_machine_parts_by_machine_id/${machineId}`)
       .then((res) => {
         if (!res.ok)
-          return res
-            .text()
-            .then((t) => Promise.reject(new Error(`HTTP ${res.status}: ${t}`)));
+          return res.text().then((t) => Promise.reject(new Error(`HTTP ${res.status}: ${t}`)));
         return res.json();
       })
       .then((data) => setConfig(Array.isArray(data) ? data : []))
       .catch((err) => setError(err?.message ?? String(err)))
       .finally(() => setLoading(false));
   }, [machineId]);
+
+  const fetchCounters = async () => {
+    if (!machineId) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/get_prts_counters?machine_id=${machineId}`);
+      if (!res.ok) {
+        console.error("Błąd pobierania liczników:", res.status);
+        return;
+      }
+      const data = await res.json();
+      setCounters(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Błąd pobierania liczników:", err);
+    }
+  };
 
   const fetchErrors = async () => {
     if (!config || config.length === 0) {
@@ -104,35 +117,6 @@ const MachineConfig = ({ machineId }) => {
     setErrorsMap(Object.fromEntries(entries));
   };
 
-  const fetchCounters = async () => {
-    if (!machineId) return;
-    try {
-      const res = await fetch(
-        `${API_BASE}/api/get_prts_counters?machine_id=${machineId}`
-      );
-      if (!res.ok) {
-        console.error("Błąd pobierania liczników:", res.status);
-        return;
-      }
-      const data = await res.json();
-      const map = {};
-      if (Array.isArray(data)) {
-        data.forEach((item) => {
-          if (item.part_id) {
-            map[item.part_id] = {
-              counter: item.counter,
-              is_empty: item.is_empty,
-              name: item.name,
-            };
-          }
-        });
-      }
-      setCountersMap(map);
-    } catch (err) {
-      console.error("Błąd pobierania liczników:", err);
-    }
-  };
-
   useEffect(() => {
     if (!config || config.length === 0) return;
     fetchErrors();
@@ -140,7 +124,7 @@ const MachineConfig = ({ machineId }) => {
     const intervalId = setInterval(() => {
       fetchErrors();
       fetchCounters();
-    }, 3000); // odświeżanie co 3 sekundy
+    }, 3000);
     return () => clearInterval(intervalId);
   }, [config, selectedTimeRange, machineId]);
 
@@ -150,9 +134,7 @@ const MachineConfig = ({ machineId }) => {
     const dateFrom = getDateFrom();
     try {
       const res = await fetch(
-        `${API_BASE}/api/get_error_for_parts?part_id=${partId}&date_from=${encodeURIComponent(
-          dateFrom
-        )}`
+        `${API_BASE}/api/get_error_for_parts?part_id=${partId}&date_from=${encodeURIComponent(dateFrom)}`
       );
       if (!res.ok) {
         const txt = await res.text();
@@ -175,10 +157,7 @@ const MachineConfig = ({ machineId }) => {
   if (selectedPart) {
     return (
       <div style={{ padding: "20px" }}>
-        <button
-          onClick={() => setSelectedPart(null)}
-          style={{ marginBottom: "10px" }}
-        >
+        <button onClick={() => setSelectedPart(null)} style={{ marginBottom: "10px" }}>
           ← Powrót
         </button>
         <h2>
@@ -192,11 +171,7 @@ const MachineConfig = ({ machineId }) => {
         {!partLoading && !partError && partErrors.length === 0 && <p>Brak błędów</p>}
 
         {!partLoading && !partError && partErrors.length > 0 && (
-          <table
-            border="1"
-            cellPadding="5"
-            style={{ borderCollapse: "collapse", width: "100%" }}
-          >
+          <table border="1" cellPadding="5" style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead>
               <tr>
                 <th>ID błędu</th>
@@ -223,12 +198,10 @@ const MachineConfig = ({ machineId }) => {
 
   return (
     <div>
-      <div style={{ marginBottom: 10 }}>
+      {/* Dropdown na górze */}
+      <div style={{ marginTop: "10px", marginBottom: 10 }}>
         <label>Wybierz zakres czasu: </label>
-        <select
-          value={selectedTimeRange}
-          onChange={(e) => setSelectedTimeRange(e.target.value)}
-        >
+        <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)}>
           {timeOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -237,20 +210,43 @@ const MachineConfig = ({ machineId }) => {
         </select>
       </div>
 
-      <div
-        className="machine-config-board"
-        style={{ position: "relative", width: "100%", height: "500px" }}
-      >
+      {/* --- Nagłówek z kafelkami pod wyborem czasu --- */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", padding: "10px 0" }}>
+        {counters
+          .filter((c) => c.counter > 0)
+          .map((c) => (
+            <div
+              key={c.part_id}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "6px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                backgroundColor: "#faa307", // tło pod napisami
+              }}
+            >
+              <div style={{ fontWeight: "bold", color: "#000" }}>{c.name}</div>
+              <div style={{ fontWeight: "bold", color: "blue" }}>{c.counter}</div>
+              <div style={{ fontWeight: "bold", color: c.is_empty ? "red" : "green" }}>
+                {c.is_empty ? "BRAK" : "OK"}
+              </div>
+            </div>
+          ))}
+      </div>
+
+      {/* Plansza z częściami */}
+      <div className="machine-config-board" style={{ position: "relative", width: "100%", height: "500px" }}>
         {config.map((item) => {
           const errs = errorsMap[item.id] || [];
           const errsText = errs.length > 0 ? errs.join(", ") : "";
-          const counterData = countersMap[item.id];
+          const counterData = counters.find((c) => c.part_id === item.id);
 
           return (
             <button
               key={item.id}
               className="machine-button"
-              title={item.name}
+              title={`Status: ${counterData?.is_empty ? "BRAK" : "OK"}`}
               style={{
                 position: "absolute",
                 left: `${item.x}%`,
@@ -260,68 +256,44 @@ const MachineConfig = ({ machineId }) => {
                 fontSize: "12px",
                 lineHeight: "1.2",
                 whiteSpace: "normal",
-                padding: "4px",
+                padding: "6px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
-                minWidth: "60px",
+                justifyContent: "flex-start",
+                minWidth: "50px",
               }}
               onClick={() => {
                 setSelectedPart(item);
                 fetchPartErrors(item.id);
               }}
             >
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                {/* Status */}
-                {counterData && (
-                  <div
-                    style={{
-                      color: counterData.is_empty ? "red" : "green",
-                      fontSize: "16px",
-                      textAlign: "center",
-                    }}
-                  >
-                    {counterData.is_empty ? "BRAK" : "OK"}
-                  </div>
-                )}
-
-                {/* Licznik tylko jeśli > 0, pod statusem */}
-                {counterData && counterData.counter > 0 && (
-                  <div style={{ color: "blue", fontWeight: "bold", marginTop: "2px" }}>
-                    {counterData.counter}
-                  </div>
-                )}
-
-                {/* Nazwa części */}
-                {counterData && (
-                  <div
-                    style={{
-                      fontSize: "10px",
-                      marginTop: "2px",
-                      textAlign: "center",
-                    }}
-                  >
-                    {counterData.name}
-                  </div>
-                )}
-
-                {/* Błędy */}
-                {errsText && (
-                  <div
-                    style={{
-                      color: "red",
-                      fontSize: "8px",
-                      marginTop: "2px",
-                      maxWidth: "80px",
-                      textAlign: "center",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {errsText}
-                  </div>
-                )}
-              </div>
+              {counterData && (
+                <div
+                  style={{
+                    color: counterData.is_empty ? "red" : "green",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    marginBottom: "2px",
+                  }}
+                >
+                  {counterData.is_empty ? "BRAK" : "OK"}
+                </div>
+              )}
+              {errsText && (
+                <div
+                  style={{
+                    color: "red",
+                    fontSize: "8px",
+                    marginTop: "2px",
+                    maxWidth: "80px",
+                    textAlign: "center",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {errsText}
+                </div>
+              )}
             </button>
           );
         })}
