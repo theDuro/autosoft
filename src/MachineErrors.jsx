@@ -289,30 +289,30 @@ const MachineConfig = ({ machineId }) => {
         })}
 
         {/* Panel ostatnich błędów (przezroczysty, pod kafelkami liczników) */}
-        <div style={{
-          position: "absolute",
-          bottom: "0px",
-          left: "0px",
-          right: "0px",
-          backgroundColor: "transparent",
-          color: "#000",
-          padding: "4px 6px",
-          fontSize: "11px",
-          zIndex: 3, // pod kafelkami liczników
-        }}>
-          <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
-          <ul style={{ margin: 0, paddingLeft: "18px" }}>
-            {filteredLastErrors.map(e => (
-              <li key={e.id} style={{ marginBottom: "3px" }}>
-                <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
-                <span style={{ fontSize: "9px", color: "#333" }}>
-                  {new Date(e.occurred_at).toLocaleString()}
-                </span>
-              </li>
-            ))}
-            {filteredLastErrors.length === 0 && <li>Brak błędów</li>}
-          </ul>
-        </div>
+<div style={{
+  position: "absolute",
+  bottom: "340px", 
+  left: "0px",
+  right: "0px",
+  backgroundColor: "transparent",
+  color: "#000",
+  padding: "4px 6px",
+  fontSize: "14px",
+  zIndex: 3, // pod kafelkami liczników
+}}>
+  <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
+  <ul style={{ margin: 0, paddingLeft: "18px" }}>
+    {filteredLastErrors.map(e => (
+      <li key={e.id} style={{ marginBottom: "6px" }}>
+        <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
+        <span style={{ fontSize: "15px", color: "#000", fontWeight: "500" }}>
+          {new Date(e.occurred_at).toLocaleString()}
+        </span>
+      </li>
+    ))}
+    {filteredLastErrors.length === 0 && <li>Brak błędów</li>}
+  </ul>
+</div>
       </div>
     </div>
   );
