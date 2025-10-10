@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./MachineErrors.css";
 
 const API_BASE =
@@ -26,68 +26,51 @@ const MachineConfig = ({ machineId }) => {
   const [partError, setPartError] = useState(null);
   const [selectedTimeRange, setSelectedTimeRange] = useState("1h");
 
+  // --- Stany dla ostatnich błędów ---
+  const [lastErrors, setLastErrors] = useState([]);
+  const [selectedPartId, setSelectedPartId] = useState(null);
+
   const getDateFrom = () => {
     const now = new Date();
     let from = new Date();
     switch (selectedTimeRange) {
-      case "1h":
-        from.setHours(now.getHours() - 1);
-        break;
-      case "2h":
-        from.setHours(now.getHours() - 2);
-        break;
-      case "3h":
-        from.setHours(now.getHours() - 3);
-        break;
-      case "1d":
-        from.setDate(now.getDate() - 1);
-        break;
-      case "2d":
-        from.setDate(now.getDate() - 2);
-        break;
-      case "7d":
-        from.setDate(now.getDate() - 7);
-        break;
-      case "30d":
-        from.setDate(now.getDate() - 30);
-        break;
-      default:
-        from = now;
+      case "1h": from.setHours(now.getHours() - 1); break;
+      case "2h": from.setHours(now.getHours() - 2); break;
+      case "3h": from.setHours(now.getHours() - 3); break;
+      case "1d": from.setDate(now.getDate() - 1); break;
+      case "2d": from.setDate(now.getDate() - 2); break;
+      case "7d": from.setDate(now.getDate() - 7); break;
+      case "30d": from.setDate(now.getDate() - 30); break;
+      default: from = now;
     }
     return from.toISOString();
   };
 
+  // --- Fetch części maszyny ---
   useEffect(() => {
     if (!machineId) return;
     setLoading(true);
     setError(null);
-
     fetch(`${API_BASE}/api/get_machine_parts_by_machine_id/${machineId}`)
-      .then((res) => {
-        if (!res.ok)
-          return res.text().then((t) => Promise.reject(new Error(`HTTP ${res.status}: ${t}`)));
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : Promise.reject(res.statusText))
       .then((data) => setConfig(Array.isArray(data) ? data : []))
       .catch((err) => setError(err?.message ?? String(err)))
       .finally(() => setLoading(false));
   }, [machineId]);
 
+  // --- Fetch liczników ---
   const fetchCounters = async () => {
     if (!machineId) return;
     try {
       const res = await fetch(`${API_BASE}/api/get_prts_counters?machine_id=${machineId}`);
-      if (!res.ok) {
-        console.error("Błąd pobierania liczników:", res.status);
-        return;
+      if (res.ok) {
+        const data = await res.json();
+        setCounters(Array.isArray(data) ? data : []);
       }
-      const data = await res.json();
-      setCounters(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Błąd pobierania liczników:", err);
-    }
+    } catch (err) { console.error(err); }
   };
 
+  // --- Fetch błędów dla części ---
   const fetchErrors = async () => {
     if (!config || config.length === 0) {
       setErrorsMap({});
@@ -117,17 +100,7 @@ const MachineConfig = ({ machineId }) => {
     setErrorsMap(Object.fromEntries(entries));
   };
 
-  useEffect(() => {
-    if (!config || config.length === 0) return;
-    fetchErrors();
-    fetchCounters();
-    const intervalId = setInterval(() => {
-      fetchErrors();
-      fetchCounters();
-    }, 3000);
-    return () => clearInterval(intervalId);
-  }, [config, selectedTimeRange, machineId]);
-
+  // --- Fetch błędów dla części po kliknięciu ---
   const fetchPartErrors = async (partId) => {
     setPartLoading(true);
     setPartError(null);
@@ -150,6 +123,37 @@ const MachineConfig = ({ machineId }) => {
     }
   };
 
+  // --- Fetch ostatnich błędów maszyny ---
+  const fetchLastErrors = async () => {
+    if (!machineId) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/get_last_errors/${machineId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setLastErrors(Array.isArray(data) ? data : []);
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  // --- Odświeżanie co 3 sekundy ---
+  useEffect(() => {
+    if (!config || config.length === 0) return;
+    fetchErrors();
+    fetchCounters();
+    fetchLastErrors();
+    const intervalId = setInterval(() => {
+      fetchErrors();
+      fetchCounters();
+      fetchLastErrors();
+    }, 3000);
+    return () => clearInterval(intervalId);
+  }, [config, selectedTimeRange, machineId]);
+
+  const counterMap = useMemo(() => Object.fromEntries(counters.map((c) => [c.part_id, c])), [counters]);
+  const filteredLastErrors = selectedPartId
+    ? lastErrors.filter((e) => e.part_id === selectedPartId)
+    : lastErrors;
+
   if (!machineId) return null;
   if (loading) return <p>Ładowanie konfiguracji maszyny...</p>;
   if (error) return <p style={{ color: "red" }}>{String(error)}</p>;
@@ -161,15 +165,11 @@ const MachineConfig = ({ machineId }) => {
           ← Powrót
         </button>
         <h2>
-          Błędy dla części {selectedPart.name} w zakresie{" "}
-          {timeOptions.find((o) => o.value === selectedTimeRange)?.label}
+          Błędy dla części {selectedPart.name} w zakresie {timeOptions.find(o => o.value === selectedTimeRange)?.label}
         </h2>
-
         {partLoading && <p>Ładowanie...</p>}
         {partError && <p style={{ color: "red" }}>{String(partError)}</p>}
-
         {!partLoading && !partError && partErrors.length === 0 && <p>Brak błędów</p>}
-
         {!partLoading && !partError && partErrors.length > 0 && (
           <table border="1" cellPadding="5" style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead>
@@ -181,7 +181,7 @@ const MachineConfig = ({ machineId }) => {
               </tr>
             </thead>
             <tbody>
-              {partErrors.map((e) => (
+              {partErrors.map(e => (
                 <tr key={e.id}>
                   <td>{e.error_id}</td>
                   <td>{e.error_code}</td>
@@ -197,51 +197,44 @@ const MachineConfig = ({ machineId }) => {
   }
 
   return (
-    <div>
-      {/* Dropdown na górze */}
+    <div style={{ position: "relative" }}>
+      {/* Dropdown */}
       <div style={{ marginTop: "10px", marginBottom: 10 }}>
         <label>Wybierz zakres czasu: </label>
-        <select value={selectedTimeRange} onChange={(e) => setSelectedTimeRange(e.target.value)}>
-          {timeOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
+        <select value={selectedTimeRange} onChange={e => setSelectedTimeRange(e.target.value)}>
+          {timeOptions.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
       </div>
 
-      {/* --- Nagłówek z kafelkami pod wyborem czasu --- */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", padding: "10px 0" }}>
-        {counters
-          .filter((c) => c.counter > 0)
-          .map((c) => (
-            <div
-              key={c.part_id}
-              style={{
-                padding: "6px 10px",
-                borderRadius: "6px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "#faa307", // tło pod napisami
-              }}
-            >
-              <div style={{ fontWeight: "bold", color: "#000" }}>{c.name}</div>
-              <div style={{ fontWeight: "bold", color: "blue" }}>{c.counter}</div>
-              <div style={{ fontWeight: "bold", color: c.is_empty ? "red" : "green" }}>
-                {c.is_empty ? "BRAK" : "OK"}
-              </div>
+      {/* Kafelki liczników */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", padding: "10px 0", zIndex: 10, position: "relative" }}>
+        {counters.filter(c => c.counter > 0).map(c => (
+          <div key={c.part_id} style={{
+            padding: "6px 10px",
+            borderRadius: "6px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "4px",
+            backgroundColor: "#faa307",
+          }}>
+            <div style={{ fontWeight: "bold", color: "#000" }}>{c.name}</div>
+            <div style={{ fontWeight: "bold", color: "blue" }}>{c.counter}</div>
+            <div style={{ fontWeight: "bold", color: c.is_empty ? "red" : "green" }}>
+              {c.is_empty ? "BRAK" : "OK"}
             </div>
-          ))}
+          </div>
+        ))}
       </div>
 
-      {/* Plansza z częściami */}
+      {/* Plansza maszyn */}
       <div className="machine-config-board" style={{ position: "relative", width: "100%", height: "500px" }}>
-        {config.map((item) => {
+        {config.map(item => {
           const errs = errorsMap[item.id] || [];
           const errsText = errs.length > 0 ? errs.join(", ") : "";
-          const counterData = counters.find((c) => c.part_id === item.id);
-
+          const counterData = counterMap[item.id];
           return (
             <button
               key={item.id}
@@ -265,38 +258,61 @@ const MachineConfig = ({ machineId }) => {
               }}
               onClick={() => {
                 setSelectedPart(item);
+                setSelectedPartId(item.id);
                 fetchPartErrors(item.id);
               }}
             >
               {counterData && (
-                <div
-                  style={{
-                    color: counterData.is_empty ? "red" : "green",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    marginBottom: "2px",
-                  }}
-                >
+                <div style={{
+                  color: counterData.is_empty ? "red" : "green",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  marginBottom: "2px",
+                }}>
                   {counterData.is_empty ? "BRAK" : "OK"}
                 </div>
               )}
               {errsText && (
-                <div
-                  style={{
-                    color: "red",
-                    fontSize: "8px",
-                    marginTop: "2px",
-                    maxWidth: "80px",
-                    textAlign: "center",
-                    wordBreak: "break-word",
-                  }}
-                >
+                <div style={{
+                  color: "red",
+                  fontSize: "8px",
+                  marginTop: "2px",
+                  maxWidth: "80px",
+                  textAlign: "center",
+                  wordBreak: "break-word",
+                }}>
                   {errsText}
                 </div>
               )}
             </button>
           );
         })}
+
+        {/* Panel ostatnich błędów (przezroczysty, pod kafelkami liczników) */}
+        <div style={{
+          position: "absolute",
+          bottom: "0px",
+          left: "0px",
+          right: "0px",
+          backgroundColor: "transparent",
+          color: "#000",
+          padding: "4px 6px",
+          fontSize: "11px",
+          zIndex: 3, // pod kafelkami liczników
+        }}>
+          <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
+          <ul style={{ margin: 0, paddingLeft: "18px" }}>
+            {filteredLastErrors.map(e => (
+              <li key={e.id} style={{ marginBottom: "3px" }}>
+                <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
+                <span style={{ fontSize: "9px", color: "#333" }}>
+                  {new Date(e.occurred_at).toLocaleString()}
+                </span>
+              </li>
+            ))}
+            {filteredLastErrors.length === 0 && <li>Brak błędów</li>}
+          </ul>
+        </div>
       </div>
     </div>
   );
