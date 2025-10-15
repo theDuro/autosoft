@@ -5,6 +5,8 @@ const API_BASE =
   "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net"; // bez '/' na końcu
 
 const timeOptions = [
+  { label: "Ostatnia minuta", value: "1m" },
+  { label: "Ostatnie 10 min", value: "10m" },
   { label: "Ostatnia godzina", value: "1h" },
   { label: "Ostatnie 2 godziny", value: "2h" },
   { label: "Ostatnie 3 godziny", value: "3h" },
@@ -34,6 +36,8 @@ const MachineConfig = ({ machineId }) => {
     const now = new Date();
     let from = new Date();
     switch (selectedTimeRange) {
+      case "1m": from.setHours(now.getMinutes() - 1); break;
+      case "10m": from.setHours(now.getMinutes() - 10); break;
       case "1h": from.setHours(now.getHours() - 1); break;
       case "2h": from.setHours(now.getHours() - 2); break;
       case "3h": from.setHours(now.getHours() - 3); break;
