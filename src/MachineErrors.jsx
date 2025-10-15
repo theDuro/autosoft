@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import "./MachineErrors.css";
 
 const API_BASE =
-  "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
+  "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net"; // bez '/' na końcu
 
 const timeOptions = [
   { label: "Ostatnia godzina", value: "1h" },
@@ -28,7 +28,7 @@ const MachineConfig = ({ machineId }) => {
 
   // --- Stany dla ostatnich błędów ---
   const [lastErrors, setLastErrors] = useState([]);
-  const [selectedPartId, setSelectedPartId] = useState(null);
+  const [selectedPartId, setSelectedPartId] = useState(null); // już nie ustawiamy go przy kliknięciu
 
   const getDateFrom = () => {
     const now = new Date();
@@ -127,25 +127,31 @@ const MachineConfig = ({ machineId }) => {
   const fetchLastErrors = async () => {
     if (!machineId) return;
     try {
-      const res = await fetch(`${API_BASE}/api/get_last_errors/${machineId}`);
+      const url = `${API_BASE}/api/get_last_errors/${machineId}`;
+      console.log("fetchLastErrors:", url); // debug
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setLastErrors(Array.isArray(data) ? data : []);
+      } else {
+        console.warn("get_last_errors failed", res.status);
       }
     } catch (err) { console.error(err); }
   };
 
   // --- Odświeżanie co 3 sekundy ---
   useEffect(() => {
-    if (!config || config.length === 0) return;
+    if (!config || config.length === 0 || !machineId) return;
     fetchErrors();
     fetchCounters();
     fetchLastErrors();
+
     const intervalId = setInterval(() => {
       fetchErrors();
       fetchCounters();
       fetchLastErrors();
     }, 3000);
+
     return () => clearInterval(intervalId);
   }, [config, selectedTimeRange, machineId]);
 
@@ -258,7 +264,7 @@ const MachineConfig = ({ machineId }) => {
               }}
               onClick={() => {
                 setSelectedPart(item);
-                setSelectedPartId(item.id);
+                // usunięto: setSelectedPartId(item.id);
                 fetchPartErrors(item.id);
               }}
             >
@@ -289,30 +295,30 @@ const MachineConfig = ({ machineId }) => {
         })}
 
         {/* Panel ostatnich błędów (przezroczysty, pod kafelkami liczników) */}
-<div style={{
-  position: "absolute",
-  bottom: "340px", 
-  left: "0px",
-  right: "0px",
-  backgroundColor: "transparent",
-  color: "#000",
-  padding: "4px 6px",
-  fontSize: "14px",
-  zIndex: 3, // pod kafelkami liczników
-}}>
-  <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
-  <ul style={{ margin: 0, paddingLeft: "18px" }}>
-    {filteredLastErrors.map(e => (
-      <li key={e.id} style={{ marginBottom: "6px" }}>
-        <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
-        <span style={{ fontSize: "15px", color: "#000", fontWeight: "500" }}>
-          {new Date(e.occurred_at).toLocaleString()}
-        </span>
-      </li>
-    ))}
-    {filteredLastErrors.length === 0 && <li>Brak błędów</li>}
-  </ul>
-</div>
+        <div style={{
+          position: "absolute",
+          bottom: "340px",
+          left: "0px",
+          right: "0px",
+          backgroundColor: "transparent",
+          color: "#000",
+          padding: "4px 6px",
+          fontSize: "14px",
+          zIndex: 3, // pod kafelkami liczników
+        }}>
+          <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
+          <ul style={{ margin: 0, paddingLeft: "18px" }}>
+            {filteredLastErrors.map(e => (
+              <li key={e.id} style={{ marginBottom: "6px" }}>
+                <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
+                <span style={{ fontSize: "15px", color: "#000", fontWeight: "500" }}>
+                  {new Date(e.occurred_at).toLocaleString()}
+                </span>
+              </li>
+            ))}
+            {filteredLastErrors.length === 0 && <li>Brak błędów</li>}
+          </ul>
+        </div>
       </div>
     </div>
   );
