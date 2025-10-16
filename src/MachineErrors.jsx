@@ -83,7 +83,7 @@ const MachineConfig = ({ machineId }) => {
     const dateFrom = getDateFrom();
     const entries = await Promise.all(
       config.map(async (item) => {
-        const url = `${API_BASE}/api/get_error_ids?part_id=${encodeURIComponent(
+        const url = `${API_BASE}/api/get_error_str?part_id=${encodeURIComponent(
           item.id
         )}&date_from=${encodeURIComponent(dateFrom)}`;
         try {
@@ -219,25 +219,35 @@ const MachineConfig = ({ machineId }) => {
       </div>
 
       {/* Kafelki liczników */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", padding: "10px 0", zIndex: 10, position: "relative" }}>
-        {counters.filter(c => c.counter > 0).map(c => (
-          <div key={c.part_id} style={{
-            padding: "6px 10px",
-            borderRadius: "6px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "4px",
-            backgroundColor: "#faa307",
-          }}>
-            <div style={{ fontWeight: "bold", color: "#000" }}>{c.name}</div>
-            <div style={{ fontWeight: "bold", color: "blue" }}>{c.counter}</div>
-            <div style={{ fontWeight: "bold", color: c.is_empty ? "red" : "green" }}>
-              {c.is_empty ? "BRAK" : "OK"}
-            </div>
-          </div>
-        ))}
+<div style={{ 
+  display: "flex", 
+  flexWrap: "wrap", 
+  gap: "6px",          // mniejsza przerwa między kafelkami
+  padding: "5px 0", 
+  zIndex: 10, 
+  position: "relative" 
+}}>
+  {counters.filter(c => c.counter > 0).map(c => (
+    <div 
+      key={c.part_id} 
+      style={{
+        padding: "3px 6px",       // znacznie mniejsze kafelki
+        borderRadius: "4px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "2px",               // mniejsze odstępy między liniami
+        backgroundColor: "#faa307",
+      }}
+    >
+      <div style={{ fontWeight: "bold", color: "#000", fontSize: "10px" }}>{c.name}</div>
+      <div style={{ fontWeight: "bold", color: "blue", fontSize: "11px" }}>{c.counter}</div>
+      <div style={{ fontWeight: "bold", color: c.is_empty ? "red" : "green", fontSize: "10px" }}>
+        {c.is_empty ? "BRAK" : "OK"}
       </div>
+    </div>
+  ))}
+</div>
 
       {/* Plansza maszyn */}
       <div className="machine-config-board" style={{ position: "relative", width: "100%", height: "500px" }}>
@@ -301,13 +311,13 @@ const MachineConfig = ({ machineId }) => {
         {/* Panel ostatnich błędów (przezroczysty, pod kafelkami liczników) */}
         <div style={{
           position: "absolute",
-          bottom: "340px",
+          bottom: "320px",
           left: "0px",
           right: "0px",
           backgroundColor: "transparent",
-          color: "#000",
+          color: "#fbf3f3ff",
           padding: "4px 6px",
-          fontSize: "14px",
+          fontSize: "10px",
           zIndex: 3, // pod kafelkami liczników
         }}>
           <strong>Ostatnie błędy {selectedPartId ? `(część ${selectedPartId})` : ""}</strong>
@@ -315,7 +325,7 @@ const MachineConfig = ({ machineId }) => {
             {filteredLastErrors.map(e => (
               <li key={e.id} style={{ marginBottom: "6px" }}>
                 <span style={{ fontWeight: "bold" }}>{e.error_code}</span>: {e.description} <br />
-                <span style={{ fontSize: "15px", color: "#000", fontWeight: "500" }}>
+                <span style={{ fontSize: "15px", color: "#fbf3f3ff", fontWeight: "500" }}>
                   {new Date(e.occurred_at).toLocaleString()}
                 </span>
               </li>
