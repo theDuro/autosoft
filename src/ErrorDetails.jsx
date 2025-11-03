@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const API_BASE =
-  "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
-
+  "http://192.168.1.149:5000";
 const ErrorDetails = () => {
   const { partId } = useParams();
   const [searchParams] = useSearchParams();

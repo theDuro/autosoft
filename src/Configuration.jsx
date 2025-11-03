@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Configuration.css";
 
-const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
+const API_BASE = "http://127.0.0.1:5000";
 const tags = ["tag1", "tag2", "tag3", "tag4"];
 const aggregationTypes = ["sum", "avg", "min", "max"];
 

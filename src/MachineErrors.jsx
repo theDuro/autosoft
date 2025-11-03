@@ -2,7 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import "./MachineErrors.css";
 
 const API_BASE =
-  "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net"; // bez '/' na końcu
+"http://127.0.0.1:5000";
+ // "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net"; // bez '/' na końcu
 
 const timeOptions = [
   { label: "Ostatnia minuta", value: "1m" },
