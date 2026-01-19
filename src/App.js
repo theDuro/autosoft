@@ -1,11 +1,11 @@
 import React from "react";
-import MachineErrors from "./MachineErrors";
+import MachineErrors from "./MachineErrors"; // lub ./MachineConfig
 
 function App() {
   return (
     <div>
       <h1>Podgląd maszyny nr 1</h1>
-      <MachineErrors />
+      <MachineErrors machineId={1} />
     </div>
   );
 }
