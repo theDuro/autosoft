@@ -1,20 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import "./MachineErrors.css";
 
-const API_BASE =
-"http://127.0.0.1:5000";
- // "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net"; // bez '/' na końcu
-
+const API_BASE = "http://127.0.0.1:5000";
 const timeOptions = [
   { label: "Ostatnia minuta", value: "1m" },
   { label: "Ostatnie 10 min", value: "10m" },
   { label: "Ostatnia godzina", value: "1h" },
-  { label: "Ostatnie 2 godziny", value: "2h" },
-  { label: "Ostatnie 3 godziny", value: "3h" },
-  { label: "Ostatni dzień", value: "1d" },
-  { label: "Ostatnie 2 dni", value: "2d" },
-  { label: "Ostatni tydzień", value: "7d" },
-  { label: "Ostatni miesiąc", value: "30d" },
 ];
 
 const MachineConfig = ({ machineId }) => {
@@ -40,12 +31,6 @@ const MachineConfig = ({ machineId }) => {
       case "1m": from.setHours(now.getMinutes() - 1); break;
       case "10m": from.setHours(now.getMinutes() - 10); break;
       case "1h": from.setHours(now.getHours() - 1); break;
-      case "2h": from.setHours(now.getHours() - 2); break;
-      case "3h": from.setHours(now.getHours() - 3); break;
-      case "1d": from.setDate(now.getDate() - 1); break;
-      case "2d": from.setDate(now.getDate() - 2); break;
-      case "7d": from.setDate(now.getDate() - 7); break;
-      case "30d": from.setDate(now.getDate() - 30); break;
       default: from = now;
     }
     return from.toISOString();

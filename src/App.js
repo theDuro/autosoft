@@ -1,27 +1,11 @@
-import React, { useState } from "react";
-import './App.css';
-import MachinesList from "./MachinesList";
-import Login from "./Login";
+import React from "react";
+import MachineErrors from "./MachineErrors";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("token")
-  );
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
   return (
     <div>
-      {isLoggedIn ? (
-        <>
-          <h1>Lista maszyn</h1>
-          <MachinesList />
-        </>
-      ) : (
-        <Login onLogin={handleLogin} />
-      )}
+      <h1>Podgląd maszyny nr 1</h1>
+      <MachineErrors />
     </div>
   );
 }

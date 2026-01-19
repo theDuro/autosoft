@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const API_BASE =
-  "http://192.168.1.149:5000";
+  "http://localhost:5000";
 const ErrorDetails = () => {
   const { partId } = useParams();
   const [searchParams] = useSearchParams();

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 
-const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net";
+const API_BASE = "http://localhost:5000/";
 
 const DEFAULT_TAG_LABELS = {
   tag1: "tag1",
