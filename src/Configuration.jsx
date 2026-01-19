@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Configuration.css";
+const hostname = window.location.hostname;
+const protocol = window.location.protocol;
 
-const API_BASE = "http://127.0.0.1:5000";
+// Backend w Dockerze u znajomego jest wystawiony na hoście na porcie 5000
+const API_PORT = 5000;
+const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
 const tags = ["tag1", "tag2", "tag3", "tag4"];
 const aggregationTypes = ["sum", "avg", "min", "max"];
 

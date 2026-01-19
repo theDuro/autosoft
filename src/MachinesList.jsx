@@ -7,10 +7,11 @@ import DateFilter from "./DateFilter";
 import TopActions from "./TopActions";
 import Configuration from "./Configuration";
 import "./MachinesList.css";
-
-const API_BASE = "http://localhost:5000";
-//const API_BASE = "https://autosoftv2-h4eeh8emg3dzceds.germanywestcentral-01.azurewebsites.net/";
-
+const hostname = window.location.hostname;
+const protocol = window.location.protocol;
+// Backend w Dockerze u znajomego jest wystawiony na hoście na porcie 5000
+const API_PORT = 5000;
+const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
 function parseJwt(token) {
   try {
     return JSON.parse(atob(token.split(".")[1]));

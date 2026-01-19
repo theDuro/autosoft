@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-const API_BASE =
-  "http://localhost:5000";
+const hostname = window.location.hostname;
+const protocol = window.location.protocol;
+// Backend w Dockerze u znajomego jest wystawiony na hoście na porcie 5000
+const API_PORT = 5000;
+const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
 const ErrorDetails = () => {
   const { partId } = useParams();
   const [searchParams] = useSearchParams();

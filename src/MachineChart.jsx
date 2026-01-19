@@ -2,7 +2,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/";
+const hostname = window.location.hostname;
+const protocol = window.location.protocol;
+// Backend w Dockerze u znajomego jest wystawiony na hoście na porcie 5000
+const API_PORT = 5000;
+const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
 
 const DEFAULT_TAG_LABELS = {
   tag1: "tag1",
