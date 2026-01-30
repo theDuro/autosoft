@@ -30,6 +30,7 @@ const Configuration = ({ machineId, machineName = "Maszyna" }) => {
         setLoading(false);
       }
     };
+    // adding the viev of the machins
 
     fetchConfig();
   }, [machineId]);
