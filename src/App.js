@@ -1,5 +1,6 @@
 import React from "react";
 import MachineErrors from "./MachineErrors"; // lub ./MachineConfig
+import TopActions from "./TopActions";
 
 function App() {
   return (

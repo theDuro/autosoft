@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
 import "./MachineErrors.css";
+import ErrorChart from "./ErrorChart"; // upewnij się, że ścieżka jest poprawna
+import PartsCountersTiles from "./PartsCountersTiles"; // poprawiony import
+
 const hostname = window.location.hostname;
 const protocol = window.location.protocol;
-// Backend w Dockerze u znajomego jest wystawiony na hoście na porcie 5000
 const API_PORT = 5000;
 const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
 
 const timeOptions = [
   { label: "Ostatnia minuta", value: "1m" },
-  { label: "Ostatnie 10 min", value: "10m" },
-  { label: "Ostatnia godzina", value: "1h" },
+  { label: "Ostatnie 10 min", value: "10m" }
 ];
 
 const MachineConfig = ({ machineId }) => {
@@ -25,6 +26,10 @@ const MachineConfig = ({ machineId }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState("1h");
   const [lastErrors, setLastErrors] = useState([]);
   const [selectedPartId, setSelectedPartId] = useState(null);
+
+  // Nowy stan do przełączania widoku
+  const [showErrorChart, setShowErrorChart] = useState(false);
+  const [showPartsTiles, setShowPartsTiles] = useState(false); // nowy stan dla kafelków
 
   const getDateFrom = () => {
     const now = new Date();
@@ -126,7 +131,7 @@ const MachineConfig = ({ machineId }) => {
     } catch (err) { console.error(err); }
   };
 
-  // --- Refresh every 3 seconds ---
+  // --- Refresh co 3 sekundy ---
   useEffect(() => {
     if (!config || config.length === 0 || !machineId) return;
     fetchErrors();
@@ -151,7 +156,34 @@ const MachineConfig = ({ machineId }) => {
   if (loading) return <p>Ładowanie konfiguracji maszyny...</p>;
   if (error) return <p style={{ color: "red" }}>{String(error)}</p>;
 
-  // --- Selected part view ---
+  // --- Widok kafelków części ---
+  if (showPartsTiles) {
+    return (
+      <div style={{ padding: "20px" }}>
+        <button onClick={() => setShowPartsTiles(false)} style={{ marginBottom: "10px" }}>
+          ← Powrót do maszyny
+        </button>
+        <PartsCountersTiles
+          machineId={machineId}
+          apiBase={API_BASE}
+        />
+      </div>
+    );
+  }
+
+  // --- Widok wykresu błędów ---
+  if (showErrorChart) {
+    return (
+      <div style={{ padding: "20px" }}>
+        <button onClick={() => setShowErrorChart(false)} style={{ marginBottom: "10px" }}>
+          ← Powrót do maszyny
+        </button>
+        <ErrorChart parts={config} apiBase={API_BASE} />
+      </div>
+    );
+  }
+
+  // --- Widok dla wybranej części ---
   if (selectedPart) {
     return (
       <div style={{ padding: "20px" }}>
@@ -188,10 +220,20 @@ const MachineConfig = ({ machineId }) => {
     );
   }
 
-  // --- Main machine view ---
+  // --- Główny widok maszyny ---
   return (
     <div style={{ position: "relative" }}>
-      {/* Dropdown */}
+      {/* PRZYCISKI */}
+      <div style={{ marginTop: "10px", marginBottom: 10, display: "flex", gap: "10px" }}>
+        <button onClick={() => setShowErrorChart(true)}>
+          Pokaż wykres błędów
+        </button>
+        <button onClick={() => setShowPartsTiles(true)}>
+          Pokaż kafelki części
+        </button>
+      </div>
+
+      {/* Dropdown czasu */}
       <div style={{ marginTop: "10px", marginBottom: 10 }}>
         <label>Wybierz zakres czasu: </label>
         <select value={selectedTimeRange} onChange={e => setSelectedTimeRange(e.target.value)}>
