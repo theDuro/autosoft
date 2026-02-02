@@ -5,7 +5,6 @@ import TopActions from "./TopActions";
 function App() {
   return (
     <div>
-      <h1>Podgląd maszyny nr 1</h1>
       <MachineErrors machineId={1} />
     </div>
   );
