@@ -1,20 +1,23 @@
 .machine-config-board {
   position: relative;
   width: 100%;
-  height: 500px; /* wysokość planszy */
-  border: 2px solid #cc6600;
+  height: 500px;
 
-  /* ustawienie grafiki jako tła */
-  background-image: url("WIA.00.00.00.png"); /* obraz jako tło */
-  background-size: cover; /* dopasowanie do całego obszaru */
+  /* półprzezroczyste szare tło */
+  background-color: rgba(120, 120, 120, 0.5);
+
+  /* jeśli chcesz ZOSTAWIĆ obraz w tle */
+  background-image: url("WIA.00.00.00.png");
+  background-size: 120%;
   background-position: center;
   background-repeat: no-repeat;
 
   margin-top: 20px;
   overflow: hidden;
 }
+
 .machine-button {
-    position: absolute;
+  position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -23,24 +26,33 @@
   height: 20px;
   font-size: 8px !important;
 
-  border: none;              /* usuwa pomarańczową obwódkę */
-  background-color: transparent; /* całkowita przezroczystość */
+  border: none;
+  border-radius: 3px;
   cursor: pointer;
-  border-radius: 2px;
+
+  /* pomarańczowe przyciski */
+  background-color: #ff9800;
+  color: #fff;
+
+  /* cień */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
 
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   box-sizing: border-box;
-  color: black;     
-}.machine-config-board {
-  background-size: 120%; /* zamiast cover */
-  background-position: center;
+
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
 }
 
-
 .machine-button:hover {
-  background-color: #ffaa33;
-  color: #fff;
+  background-color: #ffb347;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.machine-button:active {
+  transform: translate(-50%, -50%) scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
