@@ -4,8 +4,18 @@ const hostname = window.location.hostname;
 const protocol = window.location.protocol;
 const API_PORT = 5000;
 const API_BASE = `${protocol}//${hostname}:${API_PORT}`;
-
 const MACHINE_ID = 1;
+
+const blinkStyle = `
+  @keyframes blink-malo {
+    0%   { background-color: #ff8c00 !important; }
+    50%  { background-color: #e63946 !important; }
+    100% { background-color: #ff8c00 !important; }
+  }
+  .blink-malo-tile {
+    animation: blink-malo 0.8s ease-in-out infinite !important;
+  }
+`;
 
 const PartsCountersTiles = ({ onBack }) => {
   const [counters, setCounters] = useState([]);
@@ -35,9 +45,10 @@ const PartsCountersTiles = ({ onBack }) => {
   }, []);
 
   const getTileColor = (c) => {
-    if (c.is_empty) return "#e63946";      // BRAK
-    if (c.counter === -1) return "#f4a261"; // MAŁO
-    return "#2a9d8f";                      // OK
+    if (c.is_empty) return "#e63946";   // BRAK - czerwony
+    // Dla MAŁO nie ustawiamy koloru tutaj - będzie z animacji
+    if (c.counter === -1) return "transparent"; 
+    return "#2a9d8f";                    // OK - zielony
   };
 
   const getStatusText = (c) => {
@@ -47,57 +58,94 @@ const PartsCountersTiles = ({ onBack }) => {
   };
 
   return (
-    <div style={{ padding: "20px", height: "100vh" }}>
-      {loading && <p>Ładowanie...</p>}
+    <div style={{ 
+      padding: 0,
+      margin: 0,
+      minHeight: "100vh",
+      width: "100vw",
+      backgroundColor: "#2c2c2c",
+      boxSizing: "border-box"
+    }}>
+      <style>{blinkStyle}</style>
 
-      {/* GRID */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "16px",
-          height: "calc(100% - 50px)"
-        }}
-      >
-        {counters.map((c) => (
-          <div
-            key={c.part_id}
+      {/* CONTAINER */}
+      <div style={{ padding: "20px" }}>
+        {/* PRZYCISK POWRÓT */}
+        {onBack && (
+          <button
+            onClick={onBack}
             style={{
-              backgroundColor: getTileColor(c),
-              borderRadius: "12px",
-              padding: "20px",
+              backgroundColor: "#ff8c00",
               color: "#fff",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              minHeight: "60px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+              marginBottom: "16px",
+              transition: "all 0.2s"
             }}
+            onMouseOver={e => e.target.style.backgroundColor = "#ffa500"}
+            onMouseOut={e => e.target.style.backgroundColor = "#ff8c00"}
           >
-            {/* NAZWA */}
-            <div style={{ fontSize: "18px", fontWeight: "bold" }}>
-              {c.name}
-            </div>
+            ← Powrót
+          </button>
+        )}
 
-            {/* STATUS */}
-            <div style={{ fontSize: "28px", fontWeight: "bold" }}>
-              {getStatusText(c)}
-            </div>
+        {loading && <p style={{ color: "#fff" }}>Ładowanie...</p>}
 
-            {/* COUNTER */}
-            {c.counter > 0 && (
-              <div style={{ fontSize: "22px", fontWeight: "bold" }}>
-                {c.counter}
+        {/* GRID */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "16px"
+          }}
+        >
+          {counters.map((c) => {
+            const isMalo = c.counter === -1;
+            return (
+              <div
+                key={c.part_id}
+                className={isMalo ? "blink-malo-tile" : ""}
+                style={{
+                  backgroundColor: isMalo ? "#ff8c00" : getTileColor(c),
+                  borderRadius: "12px",
+                  padding: "20px",
+                  color: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: "120px",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
+                }}
+              >
+                {/* NAZWA */}
+                <div style={{ fontSize: "18px", fontWeight: "bold" }}>
+                  {c.name}
+                </div>
+
+                {/* STATUS */}
+                <div style={{ fontSize: "28px", fontWeight: "bold" }}>
+                  {getStatusText(c)}
+                </div>
+
+                {/* COUNTER */}
+                {c.counter > 0 && (
+                  <div style={{ fontSize: "22px", fontWeight: "bold" }}>
+                    {c.counter}
+                  </div>
+                )}
+                {c.counter === -1 && (
+                  <div style={{ fontSize: "14px", opacity: 0.9, fontWeight: "bold" }}>
+                    ⚠️ NISKI STAN
+                  </div>
+                )}
               </div>
-            )}
-
-            {c.counter === -1 && (
-              <div style={{ fontSize: "14px", opacity: 0.8 }}>
-                niski stan
-              </div>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ import "./MachineErrors.css";
 import PartsCountersTiles from "./PartsCountersTiles";
 import MachineErrorsWilk from "./MachineErrorsWilk";
 import MachineErrorsNiverplast from "./MachineErrorsNiverplast";
+import ErrorChart from "./ErrorChart";
+import ErrorsList from "./ErrorsList";
 
 import WILK2 from "./WILK2.png";
 import Niverplast from "./NiverplastV2.png";
@@ -32,6 +34,7 @@ const MachineErrors = ({ machineId }) => {
   const [partError, setPartError] = useState(null);
   const [lastErrors, setLastErrors] = useState([]);
   const [showErrorChart, setShowErrorChart] = useState(false);
+  const [showErrorsList, setShowErrorsList] = useState(false);
   const [showPartsTiles, setShowPartsTiles] = useState(false);
   const [showStatusFields, setShowStatusFields] = useState(false);
   const [showWilk, setShowWilk] = useState(false);
@@ -179,8 +182,21 @@ const MachineErrors = ({ machineId }) => {
   // ── WIDOK WILK ──────────────────────────────────────────────────────────────
   if (showWilk) {
     return (
-      <div>
-        <button onClick={() => setShowWilk(false)} style={{ margin: 10 }}>
+      <div style={{ backgroundColor: "#2c2c2c", minHeight: "100vh" }}>
+        <button 
+          onClick={() => setShowWilk(false)} 
+          style={{ 
+            margin: 10,
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}
+        >
           ← Powrót
         </button>
         <MachineErrorsWilk machineId={machineId} />
@@ -191,8 +207,21 @@ const MachineErrors = ({ machineId }) => {
   // ── WIDOK NIVERPLAST ────────────────────────────────────────────────────────
   if (showNiverplast) {
     return (
-      <div>
-        <button onClick={() => setShowNiverplast(false)} style={{ margin: 10 }}>
+      <div style={{ backgroundColor: "#2c2c2c", minHeight: "100vh" }}>
+        <button 
+          onClick={() => setShowNiverplast(false)} 
+          style={{ 
+            margin: 10,
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}
+        >
           ← Powrót
         </button>
         <MachineErrorsNiverplast machineId={machineId} />
@@ -203,20 +232,56 @@ const MachineErrors = ({ machineId }) => {
   // ── KAFELKI CZĘŚCI ──────────────────────────────────────────────────────────
   if (showPartsTiles) {
     return (
-      <div style={{ padding: 20 }}>
-        <button onClick={() => setShowPartsTiles(false)} style={{ marginBottom: 10 }}>
-          ← Powrót
-        </button>
-        <PartsCountersTiles machineId={machineId} apiBase={API_BASE} />
-      </div>
+      <PartsCountersTiles onBack={() => setShowPartsTiles(false)} />
     );
   }
 
   // ── WYKRES BŁĘDÓW ───────────────────────────────────────────────────────────
   if (showErrorChart) {
     return (
-      <div style={{ padding: 20 }}>
-        <button onClick={() => setShowErrorChart(false)}>← Powrót</button>
+      <div style={{ backgroundColor: "#2c2c2c", minHeight: "100vh" }}>
+        <button 
+          onClick={() => setShowErrorChart(false)}
+          style={{ 
+            margin: 10,
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}
+        >
+          ← Powrót
+        </button>
+        <ErrorChart machineId={machineId} />
+      </div>
+    );
+  }
+
+  // ── LISTA BŁĘDÓW ────────────────────────────────────────────────────────────
+  if (showErrorsList) {
+    return (
+      <div style={{ backgroundColor: "#2c2c2c", minHeight: "100vh" }}>
+        <button 
+          onClick={() => setShowErrorsList(false)}
+          style={{ 
+            margin: 10,
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}
+        >
+          ← Powrót
+        </button>
+        <ErrorsList machineId={machineId} />
       </div>
     );
   }
@@ -224,16 +289,31 @@ const MachineErrors = ({ machineId }) => {
   // ── SZCZEGÓŁY WYBRANEJ CZĘŚCI ───────────────────────────────────────────────
   if (selectedPart) {
     return (
-      <div style={{ padding: 20 }}>
-        <button onClick={() => setSelectedPart(null)} style={{ marginBottom: 10 }}>← Powrót</button>
+      <div style={{ padding: 20, backgroundColor: "#2c2c2c", minHeight: "100vh", color: "#fff" }}>
+        <button 
+          onClick={() => setSelectedPart(null)} 
+          style={{ 
+            marginBottom: 10,
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+          }}
+        >
+          ← Powrót
+        </button>
         <h2>Błędy dla części: {selectedPart.name} (ostatnia minuta)</h2>
         {partLoading && <p>Ładowanie...</p>}
         {partError   && <p style={{ color: "red" }}>{partError}</p>}
         {!partLoading && !partError && partErrors.length === 0 && <p>Brak błędów</p>}
         {!partLoading && !partError && partErrors.length > 0 && (
-          <table border="1" cellPadding="5" style={{ borderCollapse: "collapse", width: "100%" }}>
+          <table border="1" cellPadding="5" style={{ borderCollapse: "collapse", width: "100%", color: "#fff" }}>
             <thead>
-              <tr>
+              <tr style={{ backgroundColor: "#1a1a1a" }}>
                 <th>ID błędu</th>
                 <th>Kod błędu</th>
                 <th>Opis</th>
@@ -242,7 +322,7 @@ const MachineErrors = ({ machineId }) => {
             </thead>
             <tbody>
               {partErrors.map(e => (
-                <tr key={e.id}>
+                <tr key={e.id} style={{ backgroundColor: "#333" }}>
                   <td>{e.error_id}</td>
                   <td>{e.error_code}</td>
                   <td>{e.description}</td>
@@ -289,6 +369,25 @@ const MachineErrors = ({ machineId }) => {
         >
           Wykres błędów
         </button>
+
+        <button 
+          onClick={() => setShowErrorsList(true)}
+          style={{
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            transition: "all 0.2s"
+          }}
+          onMouseOver={e => e.target.style.backgroundColor = "#ffa500"}
+          onMouseOut={e => e.target.style.backgroundColor = "#ff8c00"}
+        >
+          Lista błędów
+        </button>
         
         <button 
           onClick={() => setShowPartsTiles(true)}
@@ -306,7 +405,7 @@ const MachineErrors = ({ machineId }) => {
           onMouseOver={e => e.target.style.backgroundColor = "#ffa500"}
           onMouseOut={e => e.target.style.backgroundColor = "#ff8c00"}
         >
-          Kafelki części
+          Stan
         </button>
         
         <button 
