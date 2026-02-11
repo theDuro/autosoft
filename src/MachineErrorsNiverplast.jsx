@@ -186,21 +186,40 @@ const MachineErrorsNiverplast = ({ machineId }) => {
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", backgroundColor: "lightgray" }}>
+    <div style={{ width: "100vw", height: "100vh", backgroundColor: "#2c2c2c" }}>
 
       <style>{blinkStyle}</style>
 
-      {/* PASEK GÓRNY */}
-      <div style={{ display: "flex", gap: 10, padding: 6, alignItems: "center" }}>
-        <button onClick={() => setShowErrorChart(true)}>Wykres błędów</button>
-        <button onClick={() => setShowPartsTiles(true)}>Kafelki części</button>
-        <label style={{ marginLeft: 10 }}>
-          <input
-            type="checkbox"
-            checked={showStatusFields}
-            onChange={() => setShowStatusFields(!showStatusFields)}
-          /> Pokaż statusy
-        </label>
+      {/* PASEK GÓRNY - pomarańczowe przyciski z cieniem */}
+      <div style={{ 
+        display: "flex", 
+        gap: 10, 
+        padding: 10, 
+        alignItems: "center",
+        backgroundColor: "#1a1a1a",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.3)"
+      }}>
+      
+        
+        <button 
+          onClick={() => setShowPartsTiles(true)}
+          style={{
+            backgroundColor: "#ff8c00",
+            color: "#fff",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            transition: "all 0.2s"
+          }}
+          onMouseOver={e => e.target.style.backgroundColor = "#ffa500"}
+          onMouseOut={e => e.target.style.backgroundColor = "#ff8c00"}
+        >
+          Kafelki części
+        </button>
+        
       </div>
 
       {/* PANEL OSTATNICH BŁĘDÓW */}
@@ -227,11 +246,11 @@ const MachineErrorsNiverplast = ({ machineId }) => {
         }
       </div>
 
-      {/* OBRAZ NIVERPLAST — cały ekran */}
+      {/* OBRAZ NIVERPLAST */}
       <div style={{
         position: "relative",
         width: "100%",
-        height: "calc(100% - 80px)",
+        height: "calc(100% - 100px)",
         background: `url(${Niverplast}) center/contain no-repeat`,
       }}>
         {partsPositions.map(p => {
