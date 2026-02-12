@@ -15,9 +15,9 @@ const API_BASE = `${protocol}//${hostname}:5000`;
 
 const blinkStyle = `
   @keyframes blink {
-    0%   { opacity: 1; }
-    50%  { opacity: 0; }
-    100% { opacity: 1; }
+    0%   { background-color: red; }
+    50%  { background-color: white; }
+    100% { background-color: red; }
   }
   .blink-brak {
     animation: blink 0.8s step-start infinite;
@@ -58,7 +58,7 @@ const MachineErrors = ({ machineId }) => {
     { partId: 14, machine: "WILK",       x: 10, y: 20, name: "Part 14" },
     { partId: 15, machine: "WILK",       x: 15, y: 36, name: "Part 15" },
     { partId: 16, machine: "WILK",       x: 20, y: 36, name: "Part 16" },
-    { partId: 17, machine: "WILK",       x: 30, y: 36, name: "Part 17" },
+    { partId: 17, machine: "WILK",       x: 33, y: 36, name: "Part 17" },
     { partId: 18, machine: "WILK",       x: 10, y: 46, name: "Part 18" },
     { partId: 19, machine: "WILK",       x: 22, y: 46, name: "Part 19" },
     { partId: 20, machine: "WILK",       x: 30, y: 46, name: "Part 20" },
@@ -70,7 +70,7 @@ const MachineErrors = ({ machineId }) => {
     { partId: 26, machine: "WILK",       x: 30, y: 67, name: "Part 26" },
     { partId: 27, machine: "WILK",       x: 40, y: 75, name: "Part 27" },
     { partId: 28, machine: "WILK",       x: 50, y: 70, name: "Part 28" },
-    { partId: 29, machine: "WILK",       x: 60, y: 70, name: "Part 29" },
+    { partId: 29, machine: "WILK",       x: 63, y: 73, name: "Part 29" },
     { partId: 30, machine: "WILK",       x: 50, y: 57, name: "Part 30" },
     { partId: 31, machine: "WILK",       x: 60, y: 57, name: "Part 31" },
     { partId: 32, machine: "WILK",       x: 50, y: 45, name: "Part 32" },
@@ -509,13 +509,13 @@ const MachineErrors = ({ machineId }) => {
                     transform: "translate(-50%, -50%)",
                     textAlign: "center",
                     cursor: "pointer",
-                    padding: 4,
+                    padding: 6,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    background: "transparent",
+                    background: isBrak ? "red" : "transparent",
                     border: "none",
-                    boxShadow: "none",
+                    borderRadius: "4px",
                   }}
                   title={`${p.name}\nStatus: ${statusText}\nBłędy: ${errsText || "brak"}`}
                   onClick={() => {
@@ -527,8 +527,8 @@ const MachineErrors = ({ machineId }) => {
                     <div style={{
                       color: statusColor,
                       fontWeight: "bold",
-                      fontSize: 24,
-                      textShadow: "0 0 4px #000, 0 0 4px #000",
+                      fontSize: 36,
+                      textShadow: "0 0 6px #000, 0 0 6px #000, 0 0 8px #000",
                       lineHeight: 1,
                     }}>
                       {statusText}
@@ -537,11 +537,11 @@ const MachineErrors = ({ machineId }) => {
                   {errsText !== "" && (
                     <div style={{
                       color: "red",
-                      fontSize: 16,
-                      maxWidth: 80,
+                      fontSize: 24,
+                      maxWidth: 120,
                       textAlign: "center",
                       wordBreak: "break-word",
-                      textShadow: "0 0 3px #000",
+                      textShadow: "0 0 4px #000, 0 0 4px #000",
                     }}>
                       {errsText}
                     </div>

@@ -10,9 +10,9 @@ const API_BASE = `${protocol}//${hostname}:5000`;
 
 const blinkStyle = `
   @keyframes blink {
-    0%   { opacity: 1; }
-    50%  { opacity: 0; }
-    100% { opacity: 1; }
+    0%   { background-color: red; }
+    50%  { background-color: white; }
+    100% { background-color: red; }
   }
   .blink-brak {
     animation: blink 0.8s step-start infinite;
@@ -48,7 +48,7 @@ const MachineErrorsWilk = ({ machineId }) => {
     { partId: 13, x: 25, y: 26, name: "Part 13" },
     { partId: 14, x: 20, y: 16, name: "Part 14" },
     { partId: 15, x: 22, y: 36, name: "Part 15" },
-    { partId: 16, x: 30, y: 36, name: "Part 16" },
+    { partId: 16, x: 26, y: 36, name: "Part 16" },
     { partId: 17, x: 35, y: 36, name: "Part 17" },
     { partId: 18, x: 20, y: 46, name: "Part 18" },
     { partId: 19, x: 28, y: 46, name: "Part 19" },
@@ -313,13 +313,13 @@ const MachineErrorsWilk = ({ machineId }) => {
                   transform: "translate(-50%, -50%)",
                   textAlign: "center",
                   cursor: "pointer",
-                  padding: 4,
+                  padding: 6,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  background: "transparent",
+                  background: isBrak ? "red" : "transparent",
                   border: "none",
-                  boxShadow: "none",
+                  borderRadius: "4px",
                 }}
                 title={`${p.name}\nStatus: ${statusText}\nBłędy: ${errsText || "brak"}`}
                 onClick={() => {
@@ -331,8 +331,8 @@ const MachineErrorsWilk = ({ machineId }) => {
                   <div style={{
                     color: statusColor,
                     fontWeight: "bold",
-                    fontSize: 24,
-                    textShadow: "0 0 4px #000, 0 0 4px #000",
+                    fontSize: 36,
+                    textShadow: "0 0 6px #000, 0 0 6px #000, 0 0 8px #000",
                     lineHeight: 1,
                   }}>
                     {statusText}
@@ -341,11 +341,11 @@ const MachineErrorsWilk = ({ machineId }) => {
                 {errsText !== "" && (
                   <div style={{
                     color: "red",
-                    fontSize: 16,
-                    maxWidth: 80,
+                    fontSize: 24,
+                    maxWidth: 120,
                     textAlign: "center",
                     wordBreak: "break-word",
-                    textShadow: "0 0 3px #000",
+                    textShadow: "0 0 4px #000, 0 0 4px #000",
                   }}>
                     {errsText}
                   </div>
